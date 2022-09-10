@@ -17,7 +17,8 @@ import (
 	"sync"
 	"time"
 	"unicode/utf8"
-)
+	repr "github.com/hackebrot/go-repr/repr"
+ )
 
 const (
 	// Frame header byte 0 bits from Section 5.2 of RFC 6455
@@ -617,7 +618,8 @@ func (w *messageWriter) flushFrame(final bool, extra []byte) error {
 		panic("concurrent write to websocket connection")
 	}
 	c.isWriting = true
-
+	 println("------ in frame -----------------")
+	 println(repr.Repr(c.writeBuf[framePos:w.pos]))
 	err := c.write(w.frameType, c.writeDeadline, c.writeBuf[framePos:w.pos], extra)
 
 	if !c.isWriting {
@@ -757,7 +759,12 @@ func (c *Conn) WritePreparedMessage(pm *PreparedMessage) error {
 // writing the message and closing the writer.
 func (c *Conn) WriteMessage(messageType int, data []byte) error {
 
-	if c.isServer && (c.newCompressionWriter == nil || !c.enableWriteCompression) {
+	 println(repr.Repr(data))
+ 	 println("-----------------------")
+ 	 println(string(data))
+ 	 println("-----------------------")
+
+	 if c.isServer && (c.newCompressionWriter == nil || !c.enableWriteCompression) {
 		// Fast path with no allocations and single frame.
 
 		var mw messageWriter
